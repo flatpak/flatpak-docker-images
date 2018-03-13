@@ -1,2 +1,2 @@
 build:
-	docker build --pull -t alexl/flatpak-builder .
+	docker build --pull -t flatpak/flatpak-builder .
