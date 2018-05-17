@@ -1,0 +1,49 @@
+image: docker:latest
+services:
+    - docker:dind
+
+stages:
+    - base
+    - runtimes
+
+# Expects $IMAGE which should be the name+tag of the registry image.
+# Expects $OCI_YML variable which should be the path to the dockerfile
+.base_template: &base_build
+    script:
+        - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+        - docker build --pull -f ${OCI_YML} -t ${IMAGE} .
+        # For debugging
+        - echo ${IMAGE}
+        - docker push ${IMAGE}
+    only:
+        - master
+        - triggers
+        - schedules
+
+base:
+    stage: base
+    before_script:
+        - export IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/base"
+        - export OCI_YML=Dockerfile
+    <<: *base_build
+
+fdo:1.6:
+    stage: runtimes
+    before_script:
+        - export IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/freedesktop:1.6"
+        - export OCI_YML=freedesktop-1-6/Dockerfile
+    <<: *base_build
+
+gnome:3.26:
+    stage: runtimes
+    before_script:
+        - export IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/gnome:3.26"
+        - export OCI_YML=gnome-3-26/Dockerfile
+    <<: *base_build
+
+gnome:3.28:
+    stage: runtimes
+    before_script:
+        - export IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/gnome:3.28"
+        - export OCI_YML=gnome-3-28/Dockerfile
+    <<: *base_build
