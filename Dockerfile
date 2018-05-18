@@ -1,4 +1,4 @@
-FROM fedora:27
+FROM fedora:latest
 MAINTAINER Alexander Larsson <alexl@redhat.com>
 VOLUME /build
 WORKDIR /build
