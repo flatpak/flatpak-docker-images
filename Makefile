@@ -1,23 +1,16 @@
-all: build-base build-freedesktop-1-6 build-gnome-3-26 build-gnome-3-28
+all: build-base build-freedesktop build-gnome build-kde
 
 build-base:
 	docker build --pull -t flatpak/flatpak-builder:base .
 
-build-freedesktop-1-6:
-	docker build -f freedesktop-1-6/Dockerfile --no-cache -t flatpak/flatpak-builder:freedesktop-1-6 .
+FREEDESKTOP_VERSION=19.08
+build-freedesktop: build-base
+	docker build -f freedesktop/Dockerfile --no-cache --build-arg VERSION=${FREEDESKTOP_VERSION} -t flatpak/flatpak-builder:freedesktop-$(subst .,-,${FREEDESKTOP_VERSION}) .
 
-build-gnome-3-26:
-	docker build -f gnome-3-26/Dockerfile --no-cache -t flatpak/flatpak-builder:gnome-3-26 .
+GNOME_VERSION=3.36
+build-gnome: build-base
+	docker build -f gnome/Dockerfile --no-cache --build-arg VERSION=${GNOME_VERSION} -t flatpak/flatpak-builder:gnome-$(subst .,-,${GNOME_VERSION}) .
 
-build-gnome-3-28:
-	docker build -f gnome-3-28/Dockerfile --no-cache -t flatpak/flatpak-builder:gnome-3-28 .
-
-push:
-	docker tag flatpak/flatpak-builder:base docker.io/flatpak/flatpak-builder:base
-	docker push docker.io/flatpak/flatpak-builder:base
-	docker tag flatpak/flatpak-builder:freedesktop-1-6 docker.io/flatpak/flatpak-builder:freedesktop-1-6
-	docker push docker.io/flatpak/flatpak-builder:freedesktop-1-6
-	docker tag flatpak/flatpak-builder:gnome-3-26 docker.io/flatpak/flatpak-builder:gnome-3-26
-	docker push docker.io/flatpak/flatpak-builder:gnome-3-26
-	docker tag flatpak/flatpak-builder:gnome-3-28 docker.io/flatpak/flatpak-builder:gnome-3-28
-	docker push docker.io/flatpak/flatpak-builder:gnome-3-28
+KDE_VERSION=5.14
+build-kde: build-base
+	docker build -f kde/Dockerfile --no-cache --build-arg VERSION=${KDE_VERSION} -t flatpak/flatpak-builder:kde-$(subst .,-,${KDE_VERSION}) .
